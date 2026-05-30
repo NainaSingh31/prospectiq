@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ProspectIQ — AI Company Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080b0f;
+    --surface: #0e1318;
+    --surface2: #141b22;
+    --border: #1e2a35;
+    --accent: #00e5ff;
+    --accent2: #7b61ff;
+    --green: #00ff88;
+    --red: #ff4d6d;
+    --yellow: #ffd166;
+    --text: #e8f0f7;
+    --muted: #5a7a8a;
+    --card-glow: 0 0 40px rgba(0,229,255,0.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .wrap { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:0 24px; }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    backdrop-filter: blur(10px);
+    position: sticky; top:0; z-index:100;
+    background: rgba(8,11,15,0.85);
+  }
+  .header-inner { display:flex; align-items:center; justify-content:space-between; }
+  .logo { display:flex; align-items:center; gap:10px; }
+  .logo-icon {
+    width:34px; height:34px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px;
+  }
+  .logo-text { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.5px; }
+  .logo-text span { color: var(--accent); }
+  .badge {
+    font-size:10px; padding:3px 8px;
+    background: rgba(0,229,255,0.1);
+    border:1px solid rgba(0,229,255,0.2);
+    border-radius:20px;
+    color: var(--accent);
+    letter-spacing:1px;
+  }
+
+  /* ── HERO ── */
+  .hero { padding: 60px 0 40px; text-align:center; }
+  .hero h1 {
+    font-family:'Syne',sans-serif;
+    font-size: clamp(32px,5vw,56px);
+    font-weight:800; line-height:1.1;
+    letter-spacing:-2px; margin-bottom:16px;
+  }
+  .hero h1 em {
+    font-style:normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .hero p { color:var(--muted); font-size:14px; max-width:500px; margin:0 auto; line-height:1.8; }
+
+  /* ── PANEL ── */
+  .panel {
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px; padding:32px;
+    margin-bottom:24px;
+    box-shadow: var(--card-glow);
+    transition: border-color 0.3s;
+  }
+  .panel:hover { border-color: rgba(0,229,255,0.15); }
+  .panel-title {
+    font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase;
+    color:var(--accent); margin-bottom:20px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel-title::before {
+    content:''; width:6px; height:6px;
+    background:var(--accent); border-radius:50%;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ── INPUTS ── */
+  .input-row {
+    display:grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap:12px; align-items:end;
+  }
+  @media(max-width:640px){ .input-row { grid-template-columns:1fr; } }
+
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field label { font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  .field input {
+    background: var(--surface2);
+    border:1px solid var(--border);
+    border-radius:10px; padding:12px 16px;
+    color:var(--text); font-family:'DM Mono',monospace;
+    font-size:13px; outline:none;
+    transition: border-color 0.2s, box-shadow 0.2s; width:100%;
+  }
+  .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,255,0.08); }
+  .field input::placeholder { color:var(--muted); }
+
+  .btn {
+    padding:12px 24px; border-radius:10px; border:none; cursor:pointer;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:13px;
+    letter-spacing:0.5px; transition: all 0.2s; white-space:nowrap;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#000; }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,229,255,0.25); }
+  .btn-primary:active { transform:translateY(0); }
+  .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+  .btn-secondary { background: var(--surface2); border:1px solid var(--border); color:var(--text); }
+  .btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display:none; align-items:center; gap:12px;
+    margin-top:20px; padding:14px 18px;
+    background: var(--surface2); border-radius:10px;
+    border:1px solid var(--border); font-size:13px;
+  }
+  .status-bar.show { display:flex; }
+  .spinner {
+    width:16px; height:16px;
+    border:2px solid var(--border);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink:0;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .status-steps { color:var(--muted); }
+  .status-steps b { color:var(--accent); }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    display:none; margin-top:20px;
+    background: var(--surface2);
+    border:1px solid rgba(0,229,255,0.15);
+    border-radius:12px; overflow:hidden;
+    animation: slideIn 0.4s ease;
+  }
+  .result-card.show { display:block; }
+  @keyframes slideIn {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .result-header {
+    background: linear-gradient(90deg, rgba(0,229,255,0.08), rgba(123,97,255,0.08));
+    padding:16px 20px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+  .result-company { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; }
+  .result-url { font-size:11px; color:var(--muted); }
+  .result-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+  @media(max-width:600px){ .result-grid { grid-template-columns:1fr; } }
+  .result-field {
+    padding:14px 20px;
+    border-bottom:1px solid var(--border);
+    border-right:1px solid var(--border);
+  }
+  .result-field:nth-child(even){ border-right:none; }
+  .result-field.full { grid-column:1/-1; border-right:none; }
+  .result-field:last-child, .result-field:nth-last-child(2):not(.full){ border-bottom:none; }
+  .rf-label { font-size:10px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:6px; }
+  .rf-value { font-size:13px; color:var(--text); line-height:1.6; }
+  .rf-value.highlight { color:var(--accent); }
+  .rf-value.na { color:var(--muted); font-style:italic; }
+  .tag {
+    display:inline-block;
+    background:rgba(0,229,255,0.1);
+    border:1px solid rgba(0,229,255,0.2);
+    color:var(--accent); border-radius:6px;
+    padding:2px 8px; font-size:11px; margin:2px;
+  }
+  .outreach-box {
+    background: rgba(123,97,255,0.07);
+    border:1px solid rgba(123,97,255,0.2);
+    border-radius:8px; padding:12px 14px;
+    font-size:13px; line-height:1.7;
+    color:var(--text); font-style:italic;
+  }
+
+  /* ── ERROR ── */
+  .error-box {
+    display:none; margin-top:16px; padding:14px 18px;
+    background: rgba(255,77,109,0.08);
+    border:1px solid rgba(255,77,109,0.2);
+    border-radius:10px; color:var(--red); font-size:13px;
+  }
+  .error-box.show { display:block; }
+
+  /* ── RESULTS TABLE ── */
+  .results-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px; flex-wrap:wrap; gap:12px;
+  }
+  .results-count { font-size:12px; color:var(--muted); }
+  .results-count b { color:var(--text); }
+  .table-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  thead { background: var(--surface2); border-bottom:1px solid var(--border); }
+  th {
+    padding:12px 16px; text-align:left;
+    font-family:'Syne',sans-serif; font-size:10px;
+    letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--muted); white-space:nowrap;
+  }
+  td { padding:12px 16px; border-bottom:1px solid var(--border); vertical-align:top; line-height:1.5; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(0,229,255,0.02); }
+  .td-name { font-family:'Syne',sans-serif; font-weight:700; color:var(--text); white-space:nowrap; }
+  .td-url { color:var(--muted); font-size:11px; }
+  .td-service { max-width:200px; color:var(--text); }
+  .td-customer { max-width:140px; color:var(--muted); }
+  .td-address { max-width:160px; color:var(--muted); font-size:11px; }
+  .td-contact { color:var(--accent); }
+  .td-time { color:var(--muted); font-size:11px; white-space:nowrap; }
+  .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+  .empty-state .icon { font-size:40px; margin-bottom:12px; }
+  .empty-state p { font-size:13px; }
+
+  /* ── TABS ── */
+  .tabs {
+    display:flex; gap:4px; margin-bottom:24px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:4px; width:fit-content;
+  }
+  .tab {
+    padding:8px 20px; border-radius:9px; border:none;
+    background:transparent; color:var(--muted);
+    font-family:'Syne',sans-serif; font-size:13px;
+    font-weight:700; cursor:pointer; transition:all 0.2s;
+  }
+  .tab.active { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#000; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top:1px solid var(--border);
+    padding:24px 0; margin-top:60px;
+    text-align:center; color:var(--muted);
+    font-size:11px; letter-spacing:1px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">Prospect<span>IQ</span></div>
+    </div>
+    <div class="badge">B2B ENRICHMENT ENGINE</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <h1>Turn any URL into<br/><em>Business Intelligence</em></h1>
+    <p>Scrape, analyze, and enrich company profiles with AI-powered insights, contact extraction, and outreach generation.</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('enrich')">⚡ Enrich</button>
+    <button class="tab" onclick="switchTab('results')">📊 All Results</button>
+  </div>
+
+  <!-- ENRICH TAB -->
+  <div class="tab-panel active" id="tab-enrich">
+    <div class="panel">
+      <div class="panel-title">Enrich Company</div>
+
+      <div class="input-row">
+        <div class="field">
+          <label>Website Label (optional)</label>
+          <input type="text" id="inp-name" placeholder="e.g. HubSpot CRM"/>
+        </div>
+        <div class="field">
+          <label>Company URL *</label>
+          <input type="text" id="inp-url" placeholder="https://example.com" onkeydown="if(event.key==='Enter')enrich()"/>
+        </div>
+        <button class="btn btn-primary" id="enrich-btn" onclick="enrich()">Enrich →</button>
+      </div>
+
+      <!-- Status -->
+      <div class="status-bar" id="status-bar">
+        <div class="spinner"></div>
+        <div class="status-steps" id="status-text">Initializing...</div>
+      </div>
+
+      <!-- Error -->
+      <div class="error-box" id="error-box"></div>
+
+      <!-- Result -->
+      <div class="result-card" id="result-card"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS TAB -->
+  <div class="tab-panel" id="tab-results">
+    <div class="panel">
+      <div class="results-header">
+        <div class="panel-title" style="margin:0">All Enriched Companies</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="results-count" id="results-count"></div>
+          <button class="btn btn-secondary" onclick="loadResults()">↻ Refresh</button>
+        </div>
+      </div>
+      <div id="results-container">
+        <div class="empty-state">
+          <div class="icon">📭</div>
+          <p>Click Refresh to load all enriched companies</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    ProspectIQ · AI & Automation Hackathon Submission · 2026
+  </div>
+</footer>
+
+<script>
+// ── TAB SWITCHING ──
+function switchTab(name) {
+  const tabNames = ['enrich', 'results'];
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', tabNames[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'results') loadResults();
+}
+
+// ── STATUS MESSAGES ──
+const steps = [
+  "Fetching sitemap and homepage...",
+  "Applying fuzzy matching to select relevant pages...",
+  "Scraping About, Contact, Services pages...",
+  "Cleaning HTML — removing nav, footer, banners...",
+  "Optimizing tokens for LLM context window...",
+  "Sending to LLaMA 3.3 for AI enrichment...",
+  "Extracting contacts via regex (anti-hallucination)...",
+  "Finalizing structured profile...",
+];
+let stepIdx = 0, stepTimer = null;
+
+function startSteps() {
+  stepIdx = 0;
+  document.getElementById('status-text').innerHTML = `<b>${steps[0]}</b>`;
+  stepTimer = setInterval(() => {
+    stepIdx = Math.min(stepIdx + 1, steps.length - 1);
+    document.getElementById('status-text').innerHTML = `<b>${steps[stepIdx]}</b>`;
+  }, 3500);
+}
+function stopSteps() { clearInterval(stepTimer); }
+
+// ── ENRICH ──
+async function enrich() {
+  const url = document.getElementById('inp-url').value.trim();
+  const name = document.getElementById('inp-name').value.trim();
+
+  if (!url) { showError('Please enter a company URL.'); return; }
+
+  // Client-side URL validation
+  try {
+    const testUrl = url.startsWith('http') ? url : 'https://' + url;
+    const parsed = new URL(testUrl);
+    if (!parsed.hostname || !parsed.hostname.includes('.')) {
+      showError('Please enter a valid URL (e.g. https://example.com).');
+      return;
+    }
+  } catch {
+    showError('Please enter a valid URL (e.g. https://example.com).');
+    return;
+  }
+
+  // Reset UI
+  document.getElementById('error-box').classList.remove('show');
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('status-bar').classList.add('show');
+  document.getElementById('enrich-btn').disabled = true;
+  startSteps();
+
+  try {
+    const res = await fetch('/enrich', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ url, website_name: name })
+    });
+    const data = await res.json();
+    stopSteps();
+    document.getElementById('status-bar').classList.remove('show');
+    document.getElementById('enrich-btn').disabled = false;
+
+    if (data.error) { showError(data.error); return; }
+    renderResult(data);
+  } catch(e) {
+    stopSteps();
+    document.getElementById('status-bar').classList.remove('show');
+    document.getElementById('enrich-btn').disabled = false;
+    showError('Network error — is the server running?');
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-box');
+  el.textContent = '⚠ ' + msg;
+  el.classList.add('show');
+}
+
+function val(v) {
+  if (!v || v === 'N/A' || v === '') return '<span class="rf-value na">N/A</span>';
+  return `<span class="rf-value">${escHtml(v)}</span>`;
+}
+function mailVal(arr) {
+  if (!arr || arr.length === 0) return '<span class="rf-value na">N/A</span>';
+  return arr.map(e => `<span class="tag">✉ ${escHtml(e)}</span>`).join('');
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderResult(d) {
+  const card = document.getElementById('result-card');
+  card.innerHTML = `
+    <div class="result-header">
+      <div>
+        <div class="result-company">${escHtml(d.company_name || d.website_name)}</div>
+        <div class="result-url">${escHtml(d.url)}</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">${escHtml(d.enriched_at || '')}</div>
+    </div>
+    <div class="result-grid">
+      <div class="result-field">
+        <div class="rf-label">Website Name</div>
+        <span class="rf-value highlight">${escHtml(d.website_name || 'N/A')}</span>
+      </div>
+      <div class="result-field">
+        <div class="rf-label">Address</div>
+        ${val(d.address)}
+      </div>
+      <div class="result-field">
+        <div class="rf-label">Email(s)</div>
+        <div>${mailVal(d.mail)}</div>
+      </div>
+      <div class="result-field">
+        <div class="rf-label">Phone</div>
+        ${val(d.mobile_number)}
+      </div>
+      <div class="result-field full">
+        <div class="rf-label">Core Service</div>
+        ${val(d.core_service)}
+      </div>
+      <div class="result-field">
+        <div class="rf-label">Target Customer</div>
+        ${val(d.target_customer)}
+      </div>
+      <div class="result-field">
+        <div class="rf-label">Probable Pain Point</div>
+        ${val(d.probable_pain_point)}
+      </div>
+      <div class="result-field full">
+        <div class="rf-label">Outreach Opener</div>
+        <div class="outreach-box">${escHtml(d.outreach_opener || 'N/A')}</div>
+      </div>
+    </div>
+  `;
+  card.classList.add('show');
+}
+
+// ── LOAD ALL RESULTS ──
+async function loadResults() {
+  document.getElementById('results-container').innerHTML = `
+    <div class="empty-state">
+      <div class="spinner" style="margin:0 auto 12px;width:24px;height:24px;border-width:3px"></div>
+      <p>Loading...</p>
+    </div>
+  `;
+  try {
+    const res = await fetch('/results');
+    const data = await res.json();
+    document.getElementById('results-count').innerHTML = `<b>${data.length}</b> companies`;
+    if (data.length === 0) {
+      document.getElementById('results-container').innerHTML = `
+        <div class="empty-state"><div class="icon">📭</div><p>No results yet — enrich a company first!</p></div>
+      `;
+      return;
+    }
+    renderTable(data);
+  } catch(e) {
+    document.getElementById('results-container').innerHTML = `
+      <div class="empty-state"><p style="color:var(--red)">Failed to load results.</p></div>
+    `;
+  }
+}
+
+function renderTable(data) {
+  const rows = data.map(d => `
+    <tr>
+      <td>
+        <div class="td-name">${escHtml(d.company_name || d.website_name || 'N/A')}</div>
+        <div class="td-url"><a href="${escHtml(d.url)}" target="_blank" style="color:var(--muted);text-decoration:none">${escHtml(d.url)}</a></div>
+      </td>
+      <td class="td-service">${escHtml(d.core_service || 'N/A')}</td>
+      <td class="td-customer">${escHtml(d.target_customer || 'N/A')}</td>
+      <td class="td-address">${escHtml(d.address && d.address !== 'N/A' ? d.address : '—')}</td>
+      <td class="td-contact">
+        ${d.mail && d.mail.length ? d.mail.map(e=>`<div>✉ ${escHtml(e)}</div>`).join('') : ''}
+        ${d.mobile_number && d.mobile_number !== 'N/A' ? `<div>📞 ${escHtml(d.mobile_number)}</div>` : ''}
+        ${(!d.mail || !d.mail.length) && (!d.mobile_number || d.mobile_number === 'N/A') ? '<span style="color:var(--muted)">N/A</span>' : ''}
+      </td>
+      <td class="td-time">${escHtml(d.enriched_at || '')}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('results-container').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Core Service</th>
+            <th>Target Customer</th>
+            <th>Address</th>
+            <th>Contact</th>
+            <th>Enriched At</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
