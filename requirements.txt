@@ -1,0 +1,9 @@
+flask
+flask-cors
+requests
+beautifulsoup4
+groq
+fuzzywuzzy
+python-Levenshtein
+lxml
+gunicorn
